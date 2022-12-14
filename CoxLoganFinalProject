@@ -1,0 +1,197 @@
+"""
+Personal Health Tracker
+12/14/2022
+Logan Cox
+
+The Personal Health Tracker allows users to enter their information (Height, Age, Weight, etc.)
+and get back useful information along their health journey.
+"""
+
+
+from tkinter import * #importing tkinter to use GUI
+from PIL import Image, ImageTk #Used to create a background image
+
+
+
+#function to address age limit
+def ageLimit():
+    res = int(age_entry.get())
+    if res < 18:
+        quit()
+
+#funtion to address height limit
+def heightLimit():
+    res = int(height_entry.get())
+    if res > 96:
+        quit()
+    if res < 48:
+        quit()
+
+# function to create new window and display help information
+def helpButton():
+    newWindow = Toplevel(root)
+    newWindow.title("HELP")
+    newWindow.geometry("500x200")
+    Label(newWindow, text="Sedentary is little or no exercise, desk job.\n Lightly active is light exercise or sports 1-3 days a week.\n Moderate active is moderate exercise or sports 6-7 days a week.\n Very active is hard exercise every day or exercising 2 times a day.\n Extra active is hard exercise 2 or more times per day, or training for a marathon/triathlon").pack()
+
+
+# function to take user height and weight to determine bmi
+def bmiCalculation():
+    weight = int(weight_entry.get())
+    height = int(height_entry.get())
+    user_bmi = round((weight / (height**2)) * 703, 1)
+    myBmi.set(user_bmi)
+
+
+# function to determine bf percentage based on gender
+def bfCalculation():
+    gender = (gender_entry.get())
+    age = int(age_entry.get())
+    bmi = float(myBmi.get())
+    if gender.lower() == "male":
+        user_bf = round((1.20 * bmi) + (0.23 * age) - 16.2, 1)
+    else:
+        user_bf = round((1.20 * bmi) + (0.23 * age) - 5.4, 1)
+    myBf.set(user_bf)
+
+
+# function to determine user basic metabolic rate
+def bmrCalculation():
+    weight = int(weight_entry.get())
+    height = int(height_entry.get())
+    user_age = int(age_entry.get())
+    gender = (gender_entry.get())
+    user_weight_kg = weight * 0.45359237
+    user_height_cm = height * 2.54
+    if gender.lower() == "male":
+        user_bmr = round(66 + (13.7 * user_weight_kg) + (5 * user_height_cm) - (6.8 * user_age))
+    else:
+        user_bmr = round(655 + (9.6 * user_weight_kg) + (1.8 * user_height_cm) - (4.7 * user_age))
+    myBmr.set(user_bmr)
+
+# function to determine calories based on activity level
+def activeCalculation():
+    bmr = float(myBmr.get())
+    if sedCheck.get() == 1:
+        active_calories = round(bmr * 1.2)
+    elif lightCheck.get() ==1:
+        active_calories = round(bmr * 1.375)
+    elif modCheck.get() == 1:
+        active_calories = round(bmr * 1.55)
+    elif veryCheck.get() ==1:
+        active_calories = round(bmr * 1.725)
+    elif extraCheck.get() == 1:
+        active_calories = round(bmr * 1.9)
+    myActiveCalories.set(active_calories)
+
+# function to call other functions from when user clicks enter
+def buttonClick():
+    ageLimit()
+    heightLimit()
+    bmiCalculation()
+    bfCalculation()
+    bmrCalculation()
+    activeCalculation()
+
+# inotializing window
+root = Tk()
+
+# creating string variables to store the results
+myBmi=StringVar();
+myBf=StringVar();
+myBmr=DoubleVar();
+myActiveCalories=StringVar();
+sedCheck=IntVar();
+lightCheck=IntVar();
+modCheck=IntVar();
+veryCheck=IntVar();
+extraCheck=IntVar();
+buildCheck=IntVar();
+weightCheck=IntVar();
+fitnessCheck=IntVar();
+
+
+# adding title of window
+root.title("Personal Health Tracker")
+# adding size of window
+root.geometry("825x518")
+root.configure()
+
+# adding the background image
+photo = Image.open("cartoon.jpg")
+image = ImageTk.PhotoImage(photo)
+Label(image=image).place(x=0, y=0)
+
+
+
+greeting = Label(root, text="Welcome to Health Tracker")  # greeting
+name = Label(root, text="Name")  # name
+name_entry = Entry(root)  # name entry box
+age = Label(root, text="Age")  # age
+age_entry = Entry(root)  # age entry box
+height = Label(root, text="Height(inches)")  # height
+height_entry = Entry(root)  # height entry box
+weight = Label(root, text="Weight(lbs)")  # weight
+weight_entry = Entry(root)  #weight entry box
+gender = Label(root, text="Gender(at birth)")  # Gender
+gender_entry = Entry(root,)  # gender entry box
+# text to show instructions
+activity_level = Label(root, text="Please Check Activity Level (Press HELP to define levels)")
+
+# setting the text and entry boxs
+greeting.grid(row=0, column=2)
+name.grid(row=1, sticky=E)
+age.grid(row=1, column=2, sticky=E)
+height.grid(row=3, column=0 ,sticky=E)
+weight.grid(row=3, column=2, sticky=E)
+gender.grid(row=4, column=0, sticky=E)
+activity_level.grid(row=5, column=2)
+
+# adding text and entry boxes to the window
+name_entry.grid(row=1, column=1)
+age_entry.grid(row=1, column=3)
+height_entry.grid(row=3, column=1)
+weight_entry.grid(row=3, column=3)
+gender_entry.grid(row=4, column=1)
+
+# adding check boxes
+sedentary_check = Checkbutton(root, text="Sedentary", variable=sedCheck ,onvalue=1)
+lighty_active_check = Checkbutton(root, text="Lightly Active", variable=lightCheck, onvalue=1)
+moderately_active_check = Checkbutton(root, text="Moderately Active", variable=modCheck, onvalue=1)
+very_active_check = Checkbutton(root, text="Very Active", variable=veryCheck, onvalue=1)
+extra_active_check = Checkbutton(root, text="Extra Active", variable=extraCheck, onvalue=1)
+
+# setting check box locations
+sedentary_check.grid(row=6, column=1)
+lighty_active_check.grid(row=6, column=3)
+moderately_active_check.grid(row=7, column=1)
+very_active_check.grid(row=7, column=3)
+extra_active_check.grid(row=8, column=1)
+
+# adding in help, enter, and exit buttons
+help_button = Button(root, text="HELP", command=helpButton)
+enter_button = Button(root, text="Enter", command=buttonClick)
+exit_button = Button(root, text="Exit", command=root.destroy)
+# setting button locations
+enter_button.grid(row=14, column=1)
+exit_button.grid(row=14, column=2)
+help_button.grid(row=14, column=3)
+
+
+
+# displaying bmi results
+bmi_text = Label(root, text="BMI: ").grid(row=10, column=1, sticky=E)
+Label(root, text="BMI: ", textvariable=myBmi).grid(row=10, column=2)
+# displaying bf results
+bf_text = Label(root, text="Est. BF%: ").grid(row=10,column=2, sticky=E)
+Label(root, text="BMI: ", textvariable=myBf).grid(row=10, column=3)
+# displaying bmr results
+bmr_text = Label(root, text="Est. Basic Metabolic Rate: ").grid(row=11,column=1, sticky=E)
+Label(root, text="BMI", textvariable=myBmr).grid(row=11, column=2)
+# displaying active calorie results
+active_calories_text = Label(root, text="Est. Active Calories: ",).grid(row=11, column=2 , sticky=E)
+Label(root, text="BMI", textvariable=myActiveCalories).grid(row=11, column=3)
+
+
+root.mainloop()
+
